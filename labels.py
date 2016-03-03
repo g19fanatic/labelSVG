@@ -1,5 +1,5 @@
 import svgwrite
-from svgwrite.text import TextArea
+from svgwrite.text import TSpan
 import csv
 
 rows = 10
@@ -12,12 +12,15 @@ bottomMargin = 0.5
 horSpacing = 0.14
 vertSpacing = 0.0
 
+fontSize = 12
+yTxtSpacing = fontSize
+
 addresses = []
 
 with open('Baby Shower Guest List.csv', 'r') as csvFile:
 	addressList = csv.reader(csvFile,delimiter=",", quotechar='"')
 	for address in addressList:
-		addresses.append("\n".join(address[:3]))
+		addresses.append(address[:3])
 		
 print addresses
 
@@ -27,8 +30,11 @@ for xRow in range(rows):
 	for yCol in range(columns):
 		xPos = leftMargin + (labelsize['x'] / 2 * (yCol + 1)) + (horSpacing * yCol)
 		yPos = topMargin + (labelsize['y'] / 2 * (xRow + 1)) + (vertSpacing * xRow)
-		txtArea = TextArea(addresses[addressIndex],insert=(str(xPos) + 'in', str(yPos) + 'in'), fill='black', text_anchor="middle", profile="tiny")
-		dwg.add(txtArea)
+		txt = dwg.text(addresses[addressIndex][0], insert=(str(xPos) + 'in', str(yPos) + 'in'),fill='black', text_anchor="middle", font_size=fontSize)
+		for i in range(2):
+			txt.add(TSpan(addresses[addressIndex][i + 1],x=[str(xPos) + 'in'],dy=[yTxtSpacing]))
+		txt.update({'text_anchor':"middle", 'x':str(xPos) + 'in', 'y':str(yPos) + 'in'})
+		dwg.add(txt)
 		addressIndex += 1
 		print xPos, yPos
 		
